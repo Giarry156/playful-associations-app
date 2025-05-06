@@ -28,9 +28,10 @@ class AssociationController extends Controller
      */
     public function bind(Association $association) {
         $user = auth()->user();
-        $userBind = $user->associations()->where('association_id', $association->id)->first();
+        $userBind = $user->associations()->where('id', $association->id)->exists();
 
         if ($userBind) {
+            // @TODO handle idempotency
             return response()->json([
                 'message' => 'User already bound to this association'
             ], 422);
@@ -52,9 +53,10 @@ class AssociationController extends Controller
      */
     public function unbind(Association $association) {
         $user = auth()->user();
-        $userBind = $user->associations()->where('association_id', $association->id)->first();
+        $userBind = $user->associations()->where('id', $association->id)->exists();
 
         if (!$userBind) {
+            // @TODO handle idempotency
             return response()->json([
                 'message' => 'User not bound to this association',
             ], 422);

@@ -64,7 +64,7 @@ class GameStatsController extends Controller
         });
 
         // Returning spot.
-        return TopBoardgameByAssociationsResource::collection($items);
+        return TopBoardgameByAssociationsResource::collection($items); // resources only on models
     }
 
     /**
@@ -102,6 +102,6 @@ class GameStatsController extends Controller
         });
 
         // Returning spot.
-        return TopBoardgameByUsersResource::collection($items);
+        return TopBoardgameByUsersResource::collection($items); // resources only on models
     }
 }

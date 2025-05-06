@@ -7,6 +7,7 @@ use App\Http\Requests\LoginUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -19,7 +20,7 @@ class UserController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
+            'password' => Hash::make($validated['password']),
         ]);
 
         return new UserResource($user);
@@ -33,12 +34,17 @@ class UserController extends Controller
 
         $user = User::where('email', $validated['email'])->first();
 
-        if (!$user || !password_verify($validated['password'], $user->password)) {
+        if (!Hash::check($validated['password'], $user->password)) {
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['token' => $token]);
+        return response()->json([
+            'data' => [
+                'user' => new UserResource($user),
+                'token' => $token
+            ]
+        ]);
     }
 }

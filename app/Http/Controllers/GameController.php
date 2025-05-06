@@ -36,7 +36,7 @@ class GameController extends Controller
     public function store(CreateGameRequest $request)
     {
         // Retrieving the authenticated user.
-        $user = $request->user();
+        $user = $request->user(); // auth()->user(); or Auth::user()
 
         // Retrieving validated payload.
         $validated = $request->validated();
