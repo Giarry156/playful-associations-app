@@ -16,11 +16,11 @@ class GameResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'boardgame_id' => $this->boardgame_id,
-            'association_id' => $this->association_id,
+//            'boardgame_id' => $this->boardgame_id,
+//            'association_id' => $this->association_id,
             'boardgame' => new BoardgameResource($this->boardgame),
             'association' => new AssociationResource($this->association),
-            'users' => UserResource::collection($this->users),
+            'users' => UserResource::collection($this->users) // new UserCollection($users),
         ];
     }
 }
