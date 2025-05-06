@@ -12,18 +12,27 @@ use Illuminate\Http\Request;
 
 class GameController extends Controller
 {
+    /**
+     * Get all games.
+     */
     public function index()
     {
         // Returning spot.
         return new GameCollection(Game::all());
     }
 
+    /**
+     * Get a game.
+     */
     public function show(Game $game)
     {
         // Returning spot.
         return new GameResource($game);
     }
 
+    /**
+     * Create a game.
+     */
     public function store(CreateGameRequest $request)
     {
         // Retrieving the authenticated user.

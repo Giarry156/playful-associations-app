@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserBindToAssociationRequest;
 use App\Http\Requests\UserUnbindToAssociationRequest;
+use App\Http\Resources\AssociationCollection;
 use App\Http\Resources\AssociationResource;
 use App\Http\Resources\GenericResponseDataCollection;
 use App\Http\Resources\UserResource;
@@ -12,11 +13,19 @@ use Illuminate\Http\Request;
 
 class AssociationController extends Controller
 {
-    public function index() {
+    /**
+     * Get all associations.
+     * @return AssociationCollection
+     */
+    public function index(): AssociationCollection
+    {
         $associations = Association::all();
-        return new GenericResponseDataCollection($associations);
+        return new AssociationCollection($associations);
     }
 
+    /**
+     * Bind user to an association.
+     */
     public function bind(Association $association) {
         $user = auth()->user();
         $userBind = $user->associations()->where('association_id', $association->id)->first();
@@ -31,14 +40,16 @@ class AssociationController extends Controller
 
         return response()->json([
             'message' => 'User bound to association successfully',
-            ...(new GenericResponseDataCollection([
+            'data' => [
                 'association' => new AssociationResource($association),
                 'user' => new UserResource($user)
-            ])
-            )
+            ]
         ], 201);
     }
 
+    /**
+     * Unbind user from an association.
+     */
     public function unbind(Association $association) {
         $user = auth()->user();
         $userBind = $user->associations()->where('association_id', $association->id)->first();
@@ -61,11 +72,10 @@ class AssociationController extends Controller
 
         return response()->json([
             'message' => 'User unbound from association successfully',
-            ...(new GenericResponseDataCollection([
+            'data' => [
                 'association' => new AssociationResource($association),
                 'user' => new UserResource($user)
-            ])
-            )
+            ]
         ]);
     }
 }

@@ -2,35 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\AssociationResource;
 use App\Http\Resources\BoardgameResource;
-use App\Http\Resources\GenericResponseDataCollection;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\TopBoardgameByAssociationsResource;
+use App\Http\Resources\TopBoardgameByUsersResource;
 use App\Models\Association;
 use App\Models\Boardgame;
-use App\Models\Game;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class GameStatsController extends Controller
 {
+    /**
+     * Get the boardgame with the most games.
+     */
     public function topBoardgame(){
         // Get the boardgame with the most games.
         $game = Boardgame::withCount('games')
             ->orderBy('games_count', 'desc')
             ->first();
 
-        // Formatting result.
-        $topGame = [
-            'boardgame' => new BoardgameResource($game),
-            'games_count' => $game->games_count,
-        ];
-
         // Returning spot.
-        return new GenericResponseDataCollection($topGame);
+        return response()->json([
+            'data' => [
+                'boardgame' => new BoardgameResource($game),
+                'games_count' => $game->games_count,
+            ]
+        ]);
     }
 
+    /**
+     * Get the boardgame with the most games by association.
+     */
     public function topBoardgamesByAssociations(){
         // Retrieving all games grouped by association and boardgame.
         $games = DB::table('games')
@@ -39,30 +41,35 @@ class GameStatsController extends Controller
             ->orderBy('association_id')
             ->get();
 
-        // Formatting result.
-        $topPerAssociation = $games
+        // Grouping games by association and taking the top game for each association.
+        $topsPerAssociation = $games
             ->groupBy('association_id')
-            ->map(function ($rows, $associationId) {
-                // Retrieving the top game for each association.
-                $topGame = $rows->sortByDesc('games_count')->first();
-
-                // Retrieving the association and boardgame.
-                $association = Association::find($associationId);
-                $boardgame = Boardgame::find($topGame->boardgame_id);
-
-                // Returning formatted data.
-                return [
-                    'association' => new AssociationResource($association),
-                    'boardgame' => new BoardgameResource($boardgame),
-                    'games_count' => $topGame->games_count,
-                ];
-            })
+            ->map(fn($rows) => $rows->sortByDesc('games_count')->first())
             ->values();
 
+        // Retrieving associations and boardgames.
+        $associationsIds = $topsPerAssociation->pluck('association_id')->unique();
+        $boardgamesIds = $topsPerAssociation->pluck('boardgame_id')->unique();
+
+        $associations = Association::whereIn('id', $associationsIds)->get()->keyBy('id');
+        $boardgames = Boardgame::whereIn('id', $boardgamesIds)->get()->keyBy('id');
+
+        // Creating DTO.
+        $items = $topsPerAssociation->map(function($item) use ($associations, $boardgames){
+            return (object) [
+                'association' => $associations[$item->association_id],
+                'boardgame' => $boardgames[$item->boardgame_id],
+                'games_count' => $item->games_count,
+            ];
+        });
+
         // Returning spot.
-        return new GenericResponseDataCollection($topPerAssociation);
+        return TopBoardgameByAssociationsResource::collection($items);
     }
 
+    /**
+     * Get the boardgame with the most games by user.
+     */
     public function topBoardgamesByUsers(){
         // Retrieving all games grouped by user and boardgame.
         $games = DB::table('games')
@@ -72,27 +79,29 @@ class GameStatsController extends Controller
             ->orderBy('game_user.user_id')
             ->get();
 
-        // Formatting result.
-        $topPerUser = $games
+        // Grouping games by user and taking the top game for each user.
+        $topsPerUser = $games
             ->groupBy('user_id')
-            ->map(function ($rows, $userId) {
-                // Retrieving the top game for each user.
-                $topGame = $rows->sortByDesc('games_count')->first();
-
-                // Retrieving the user and boardgame.
-                $user = User::find($userId);
-                $boardgame = Boardgame::find($topGame->boardgame_id);
-
-                // Returning formatted data.
-                return [
-                    'user' => new UserResource($user),
-                    'boardgame' => new BoardgameResource($boardgame),
-                    'games_count' => $topGame->games_count,
-                ];
-            })
+            ->map(fn($rows) => $rows->sortByDesc('games_count')->first())
             ->values();
 
+        // Retrieving users and boardgames.
+        $usersIds = $topsPerUser->pluck('user_id')->unique();
+        $boardgamesIds = $topsPerUser->pluck('boardgame_id')->unique();
+
+        $users = User::whereIn('id', $usersIds)->get()->keyBy('id');
+        $boardgames = Boardgame::whereIn('id', $boardgamesIds)->get()->keyBy('id');
+
+        // Creating DTO.
+        $items = $topsPerUser->map(function($item) use ($users, $boardgames){
+            return (object) [
+                'user' => $users[$item->user_id],
+                'boardgame' => $boardgames[$item->boardgame_id],
+                'games_count' => $item->games_count,
+            ];
+        });
+
         // Returning spot.
-        return new GenericResponseDataCollection($topPerUser);
+        return TopBoardgameByUsersResource::collection($items);
     }
 }

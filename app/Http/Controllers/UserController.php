@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    /**
+     * Register a new user.
+     */
     public function register(CreateUserRequest $request) {
         $validated = $request->validated();
 
@@ -22,6 +25,9 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
+    /**
+     * Login a user.
+     */
     public function login(LoginUserRequest $request) {
         $validated = $request->validated();
 
