@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PublisherResource\Pages;
 use App\Filament\Resources\PublisherResource\RelationManagers;
 use App\Models\Publisher;
+use Filament\Actions\ActionGroup;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -38,9 +39,9 @@ class PublisherResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Nome')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('website')->label('Sito Web')->getStateUsing(fn(Publisher $record) {
-                    return $record->website ? "<a href='{$record->website}' target='_blank' class='text-blue-500 hover:underline'>{$record->website}</a>" : null;
-                })
+                Tables\Columns\TextColumn::make('website')->label('Sito Web')->getStateUsing(function (Publisher $record): string {
+                    return $record->website ? '<a class=":group-hover/link:underline group-focus-visible/link:underline text-sm leading-6 text-gray-950 dark:text-white" href="' . $record->website . '" target="_blank">Apri sito web</a>' : '';
+                })->html(),
                 Tables\Columns\TextColumn::make('address')->label('Indirizzo')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('city')->label('Città')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->label('Creato il'),
@@ -49,8 +50,31 @@ class PublisherResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\Action::make('create-game')
+                        ->icon('heroicon-o-plus-circle')
+                        ->label("Pubblica gioco")
+                        ->action(function (Publisher $publisher, array $data) {
+                            $boardgame = $publisher->boardgames()->create([
+                                'name' => $data['name'],
+                                'number_of_players' => $data['number_of_players'],
+                                'playtime' => $data['playtime']
+                            ]);
+
+                            return redirect(BoardgameResource::getUrl('view', [
+                                'record' => $boardgame->id,
+                            ]));
+                        })
+                        ->form([
+                            Forms\Components\TextInput::make('name')->label('Nome gioco')->required(),
+                            Forms\Components\TextInput::make('number_of_players')->label('Numero di giocatori')->numeric(),
+                            Forms\Components\TextInput::make('playtime')->label('Tempo di gioco')->numeric(),
+                        ])
+                ])
+                    ->label('Opzioni')
+                    ->button()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
