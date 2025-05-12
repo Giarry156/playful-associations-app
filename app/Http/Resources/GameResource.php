@@ -18,6 +18,7 @@ class GameResource extends JsonResource
             'id' => $this->id,
 //            'boardgame_id' => $this->boardgame_id,
 //            'association_id' => $this->association_id,
+            'created_at' => $this->created_at,
             'boardgame' => new BoardgameResource($this->boardgame),
             'association' => new AssociationResource($this->association),
             'users' => UserResource::collection($this->users) // new UserCollection($users),

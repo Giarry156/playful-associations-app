@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Association;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -14,7 +17,8 @@ class UserController extends Controller
     /**
      * Register a new user.
      */
-    public function register(CreateUserRequest $request) {
+    public function register(CreateUserRequest $request)
+    {
         $validated = $request->validated();
 
         $user = User::create([
@@ -29,7 +33,8 @@ class UserController extends Controller
     /**
      * Login a user.
      */
-    public function login(LoginUserRequest $request) {
+    public function login(LoginUserRequest $request)
+    {
         $validated = $request->validated();
 
         $user = User::where('email', $validated['email'])->first();
@@ -46,5 +51,68 @@ class UserController extends Controller
                 'token' => $token
             ]
         ]);
+    }
+
+    public function loginForm(LoginUserRequest $request)
+    {
+        $validated = $request->validated();
+
+        $user = User::where('email', $validated['email'])->first();
+
+        Auth::login($user);
+
+        if (!Hash::check($validated['password'], $user->password)) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
+        }
+
+        $presidencyAssociations = Association::where('president_id', $user->id)->get();
+        $bindAssociations = $user->associations()->get();
+        $games = $user->games()->get();
+
+        return view('welcome', [
+            'user' => $user,
+            'presidencyAssociations' => $presidencyAssociations,
+            'bindAssociations' => $bindAssociations,
+            'games' => $games,
+        ]);
+    }
+
+    public function updateUser(UpdateUserRequest $request)
+    {
+        $validated = $request->validated();
+        $user = $request->user();
+
+
+        if ($validated['email'] !== $user->email) {
+            $user->email = $validated['email'];
+        }
+
+        if ($validated['name'] !== $user->name) {
+            $user->name = $validated['name'];
+        }
+
+        if ($validated['password']) {
+            $user->password = Hash::make($validated['password']);
+        }
+
+        $user->save();
+
+        return view('user_settings', [
+            'user' => $user,
+        ]);
+    }
+
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        $validated = $request->validated();
+        $user = $request->user();
+
+        if (!Hash::check($validated['old_password'], $user->password)) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
+        }
+
+        $user->password = Hash::make($validated['new_password']);
+        $user->save();
+        return response()->json(['message' => 'Password changed successfully']);
     }
 }

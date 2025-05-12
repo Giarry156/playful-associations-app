@@ -7,6 +7,7 @@ use App\Http\Requests\UserUnbindToAssociationRequest;
 use App\Http\Resources\AssociationCollection;
 use App\Http\Resources\AssociationResource;
 use App\Http\Resources\GenericResponseDataCollection;
+use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\Association;
 use Illuminate\Http\Request;
@@ -26,18 +27,14 @@ class AssociationController extends Controller
     /**
      * Bind user to an association.
      */
-    public function bind(Association $association) {
+    public function bind(Association $association)
+    {
         $user = auth()->user();
-        $userBind = $user->associations()->where('id', $association->id)->exists();
+        $userBind = $user->associations()->where('associations.id', $association->id)->exists();
 
-        if ($userBind) {
-            // @TODO handle idempotency
-            return response()->json([
-                'message' => 'User already bound to this association'
-            ], 422);
+        if (!$userBind) {
+            $user->associations()->attach($association->id);
         }
-
-        $user->associations()->attach($association->id);
 
         return response()->json([
             'message' => 'User bound to association successfully',
@@ -51,26 +48,22 @@ class AssociationController extends Controller
     /**
      * Unbind user from an association.
      */
-    public function unbind(Association $association) {
+    public function unbind(Association $association)
+    {
         $user = auth()->user();
-        $userBind = $user->associations()->where('id', $association->id)->exists();
+        $userBind = $user->associations()->where('associations.id', $association->id)->exists();
 
-        if (!$userBind) {
-            // @TODO handle idempotency
-            return response()->json([
-                'message' => 'User not bound to this association',
-            ], 422);
+        if ($userBind) {
+            $presidentId = $association->president_id;
+
+            if ($user->id === $presidentId) {
+                return response()->json([
+                    'message' => 'User is the president of this association and cannot be unbound',
+                ], 422);
+            }
+
+            $user->associations()->detach($association->id);
         }
-
-        $presidentId = $association->president_id;
-
-        if ($user->id === $presidentId) {
-            return response()->json([
-                'message' => 'User is the president of this association and cannot be unbound',
-            ], 422);
-        }
-
-        $user->associations()->detach($association->id);
 
         return response()->json([
             'message' => 'User unbound from association successfully',
@@ -79,5 +72,20 @@ class AssociationController extends Controller
                 'user' => new UserResource($user)
             ]
         ]);
+    }
+
+    public function getUsers(Association $association)
+    {
+        $user = auth()->user();
+        $presidentId = $association->president_id;
+
+        if ($user->id !== $presidentId) {
+            return response()->json([
+                'message' => 'Only authorized users can access this resource',
+            ], 422);
+        }
+
+        $users = $association->users()->get();
+        return new UserCollection($users);
     }
 }
