@@ -37,7 +37,13 @@ class PublisherResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')->label('Nome')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('website')->label('Sito Web')->getStateUsing(fn(Publisher $record) {
+                    return $record->website ? "<a href='{$record->website}' target='_blank' class='text-blue-500 hover:underline'>{$record->website}</a>" : null;
+                })
+                Tables\Columns\TextColumn::make('address')->label('Indirizzo')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('city')->label('Città')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('created_at')->dateTime()->label('Creato il'),
             ])
             ->filters([
                 //
