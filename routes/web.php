@@ -3,6 +3,10 @@
 use App\Models\Association;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/index', function () {
+    return view('index');
+})->name('index');
+
 Route::get('/register', function () {
     if (auth()->check()) {
         return redirect()->route('welcome');

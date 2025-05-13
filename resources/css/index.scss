@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+$chipBorderRadius: 100px;
+
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: grey;
+}
+
+.games-container {
+    display: flex;
+    flex-direction: column;
+
+    .game-article {
+        width: 258px;
+        background-color: white;
+        margin-left: 50px;
+        border-radius: 10px;
+        overflow: hidden;
+
+        figure {
+            margin: 0;
+            position: relative;
+
+            img {
+                max-width: 100%;
+            }
+
+            .expiration-time-container {
+                position: absolute;
+                height: 24px;
+                background-color: rgba(0, 144, 255, 0.6);
+                top: 10px;
+                left: 10px;
+                color: white;
+                display: flex;
+                align-items: center;
+                padding: 2px 10px;
+                border-radius: $chipBorderRadius;
+
+
+                svg {
+                    margin-right: 5px;
+                }
+
+                span {
+                    font-size: 14px;
+                }
+            }
+
+            .bookmark-container {
+                position: absolute;
+                height: 36px;
+                top: 10px;
+                right: 10px;
+                background-color: white;
+                aspect-ratio: 1;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease-in-out;
+
+                svg {
+                    transition: all 0.2s ease-in-out;
+                }
+
+                &:hover {
+                    cursor: pointer;
+                    background-color: #0090ff;
+
+                    svg {
+                        color: white;
+                    }
+                }
+            }
+        }
+
+        .game-info {
+            padding: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            .load-bar {
+                height: 8px;
+                background-color: whitesmoke;
+                border-radius: 4px;
+
+                div {
+                    background-color: green;
+                    height: 100%;
+                    width: 50%;
+                    border-radius: 4px;
+                }
+            }
+
+            h2 {
+                font-size: 16px;
+                text-wrap: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                margin: 10px 0 2px;
+            }
+
+            p {
+                font-size: 14px;
+                color: grey;
+                margin: 0;
+            }
+
+            .details {
+                display: flex;
+                margin-bottom: 10px;
+                position: relative;
+
+                div {
+                    flex: 1;
+                }
+
+                .discount {
+                    color: white;
+                    background-color: red;
+                    border-radius: 3px;
+                    padding: 2px 5px;
+                    margin-right: 3px;
+                }
+
+                .old-price {
+                    text-decoration: line-through;
+                    color: dimgrey;
+                }
+
+                .price {
+                    margin-top: 3px;
+                    font-size: 17px;
+                    font-weight: bold;
+                    color: black;
+                }
+
+                .stock {
+                    color: red;
+                    font-weight: 550;
+                    position: absolute;
+                    bottom: 2px;
+                    right: 5px;
+                }
+            }
+        }
+    }
+}
+
+
