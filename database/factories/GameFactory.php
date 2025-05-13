@@ -25,6 +25,7 @@ class GameFactory extends Factory
         return [
             'association_id' => $associationsIds[array_rand($associationsIds)],
             'boardgame_id' => $boardgamesIds[array_rand($boardgamesIds)],
+            'created_at' => fake()->dateTimeBetween('-1 year'),
         ];
     }
 
@@ -33,12 +34,12 @@ class GameFactory extends Factory
         return $this->afterCreating(function ($game) {
             $userIds = User::whereHas(
                 'associations',
-                fn($q) => $q ->where('association_id', $game->association_id)
+                fn($q) => $q->where('association_id', $game->association_id)
             )
                 ->pluck('id')
                 ->toArray();
 
-            if(count($userIds) < 2) return;
+            if (count($userIds) < 2) return;
 
             shuffle($userIds);
             $randomUsersIds = array_slice($userIds, 0, count($userIds) - 1);

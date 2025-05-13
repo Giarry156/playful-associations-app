@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class Boardgame extends Model
 {
@@ -20,7 +22,8 @@ class Boardgame extends Model
         return $this->belongsTo(Publisher::class);
     }
 
-    public function games(){
+    public function games()
+    {
         return $this->hasMany(Game::class);
     }
 }
