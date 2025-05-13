@@ -33,6 +33,7 @@ class AssociationsRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-        return AssociationResource::table($table);
+        return AssociationResource::table($table)
+            ->recordUrl(fn(Model $record): string => AssociationResource::getUrl('view', ['record' => $record]));
     }
 }
