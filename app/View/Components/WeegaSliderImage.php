@@ -6,13 +6,15 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Card extends Component
+class WeegaSliderImage extends Component
 {
     /**
      * Create a new component instance.
      */
     public function __construct(
-        public ?string $cardId
+        public string  $desktopImageSrc,
+        public ?string $mobileImageSrc,
+        public ?string $imageHref
     )
     {
         //
@@ -23,6 +25,6 @@ class Card extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.card');
+        return view('components.weega-slider-image');
     }
 }

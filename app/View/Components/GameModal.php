@@ -11,10 +11,7 @@ class GameModal extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(
-        public int $gameId,
-        public int $associationId
-    )
+    public function __construct()
     {
         //
     }
