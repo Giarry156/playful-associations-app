@@ -1,5 +1,5 @@
 <x-form>
-    <form id="login-form" action="{{route('login_form')}}" method="GET" class="form">
+    <form id="login-form" action="{{route('login_form')}}" method="POST" class="form">
         @csrf
         <h1 style=" text-align: center">Accedi</h1>
         <x-form-field label="Email" name="email"/>

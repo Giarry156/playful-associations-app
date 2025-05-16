@@ -6,16 +6,16 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Card extends Component
+class WeegaUserNotification extends Component
 {
     /**
      * Create a new component instance.
      */
     public function __construct(
-        public ?string $cardId
+        public string $notificationType = "advice",
+        public string $notificationTitle = ""
     )
     {
-        //
     }
 
     /**
@@ -23,6 +23,6 @@ class Card extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.card');
+        return view('components.weega-user-notification');
     }
 }

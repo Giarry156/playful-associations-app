@@ -1,153 +1,726 @@
+@use "sass:map";
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 $chipBorderRadius: 100px;
+$boxShadow: 0px 5px 9px 0px rgba(0, 0, 0, 0.1);
+$mainColor: #0090ff;
+$assetUrl: 'http://localhost/storage/asset/';
+$breakpoints: (
+    'sm': 800px,
+    'md': 1000px,
+    'lg': 1200px,
+);
 
 body {
     font-family: "Poppins", sans-serif;
-    background-color: grey;
+    background-color: rgb(244 244 245);
+    margin: 0;
 }
 
-.games-container {
-    display: flex;
-    flex-direction: column;
+#footer-navbar {
+    display: none;
+    align-items: center;
+    padding: 0 50px;
+    background-color: white;
+    height: 80px;
+    border-top: 1px solid lightgrey;
+    position: sticky;
+    bottom: 0;
+    z-index: 1000;
 
-    .game-article {
-        width: 258px;
-        background-color: white;
-        margin-left: 50px;
-        border-radius: 10px;
-        overflow: hidden;
+    .navbar-options {
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        height: 100%;
 
-        figure {
-            margin: 0;
+        .navbar-option {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
             position: relative;
 
-            img {
-                max-width: 100%;
+            svg {
+                fill: black;
             }
 
-            .expiration-time-container {
-                position: absolute;
-                height: 24px;
-                background-color: rgba(0, 144, 255, 0.6);
-                top: 10px;
-                left: 10px;
-                color: white;
-                display: flex;
-                align-items: center;
-                padding: 2px 10px;
-                border-radius: $chipBorderRadius;
+            span {
+                font-size: 12px;
+                color: black;
+            }
 
+            &.selected {
+                &::before {
+                    position: absolute;
+                    content: "";
+                    background-color: $mainColor !important;
+                    height: 4px;
+                    width: 100%;
+                    top: 0
+                }
 
                 svg {
-                    margin-right: 5px;
+                    fill: $mainColor;
                 }
 
                 span {
-                    font-size: 14px;
+                    color: $mainColor;
+                }
+            }
+        }
+    }
+
+    @media screen and (max-width: map.get($breakpoints, 'sm')) {
+        display: flex;
+    }
+}
+
+#heading-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
+    background-color: white;
+    height: 80px;
+    border-bottom: 1px solid lightgrey;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    @media screen and (max-width: map.get($breakpoints, "md")) {
+        padding: 0 20px;
+
+    }
+
+    @media screen and (max-width: map.get($breakpoints, "sm")) {
+        padding: 0 20px;
+    }
+
+    & > div {
+        flex: 1;
+    }
+
+    .navbar-search {
+        display: flex;
+        gap: 15px;
+        flex: 2;
+
+        svg {
+            height: 36px;
+            flex-shrink: 0;
+        }
+
+        .navbar-search-input-container {
+            position: relative;
+            align-items: center;
+            display: flex;
+            width: 100%;
+
+            svg {
+                position: absolute;
+                left: 10px;
+                transition: all 0.3s ease-in-out;
+            }
+
+            input {
+                border-radius: 30px;
+                padding-left: 40px;
+                outline: none;
+                border: 1px solid lightgrey;
+                max-width: 169px;
+                width: 100%;
+                height: 36px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                transition: all 0.3s ease-in-out;
+
+                &:focus {
+                    border-color: $mainColor;
+                    max-width: 100%;
+                }
+            }
+        }
+
+        @media screen and (max-width: map.get($breakpoints, "sm")) {
+            flex: 1;
+            justify-content: space-between;
+
+            .navbar-search-input-container {
+                justify-content: flex-end;
+
+                svg {
+                    left: calc(100% - 28px);
+                }
+
+                input {
+                    padding: 0;
+                    aspect-ratio: 1;
+                    width: 36px;
+
+                    &::placeholder {
+                        visibility: hidden;
+                    }
+                }
+            }
+        }
+    }
+
+    @media screen and (max-width: map.get($breakpoints, "sm")) {
+        &.navbar-mobile-search-focus {
+            .navbar-search {
+                & > svg {
+                    display: none;
                 }
             }
 
-            .bookmark-container {
-                position: absolute;
-                height: 36px;
-                top: 10px;
-                right: 10px;
-                background-color: white;
-                aspect-ratio: 1;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.2s ease-in-out;
-
+            .navbar-search-input-container {
                 svg {
-                    transition: all 0.2s ease-in-out;
+                    left: 10px;
                 }
 
-                &:hover {
-                    cursor: pointer;
-                    background-color: #0090ff;
+                input {
+                    width: 100%;
+                    max-width: 100%;
+                    padding-left: 40px;
+                }
+            }
+        }
+    }
 
-                    svg {
-                        color: white;
+    .navbar-options {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+
+        .navbar-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            svg {
+                fill: black;
+            }
+
+            span {
+                font-size: 12px;
+                color: black;
+            }
+        }
+
+        @media screen and (max-width: map.get($breakpoints, "sm")) {
+            display: none;
+        }
+    }
+
+    .navbar-avatar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex: 2;
+        position: relative;
+        height: 100%;
+
+        figure {
+            margin: 0;
+            display: flex;
+
+            &:hover {
+                cursor: pointer;
+            }
+
+            img {
+                border-radius: 50%;
+                width: 48px;
+                height: 48px;
+            }
+        }
+
+        .navbar-user-options {
+            position: absolute;
+            background-color: white;
+            top: 100%;
+            width: 375px;
+            box-shadow: $boxShadow;
+            border: 1px solid lightgrey;
+            transition: all 0.2s ease-in-out;
+            visibility: visible;
+            opacity: 1;
+
+            &.hidden {
+                visibility: hidden;
+                opacity: 0;
+                transition: visibility 0.2s, opacity 0.2s linear;
+            }
+
+            .navbar-user-welcome-bar {
+                display: flex;
+                justify-content: space-between;
+                padding: 15px 30px;
+                align-items: center;
+                border-bottom: 1px solid lightgrey;
+                top: 0;
+
+                span {
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: black;
+                }
+
+                button {
+                    background-color: white;
+                    border-radius: 30px;
+                    border: 3px solid $mainColor;
+                    color: $mainColor;
+                    padding: 10px 20px;
+                    font-size: 14px;
+                    font-weight: 550;
+                    box-shadow: $boxShadow;
+                    flex-shrink: 0;
+                }
+            }
+
+            .navbar-user-notifications {
+                height: 420px;
+                overflow-y: scroll;
+                overscroll-behavior: contain;
+
+                &::-webkit-scrollbar {
+                    display: none;
+                }
+
+                .navbar-user-notification {
+                    height: 86px;
+                    display: flex;
+                    align-items: center;
+                    flex-shrink: 0;
+                    border-bottom: 1px solid lightgrey;
+
+                    figure {
+                        margin: 10px;
+                        width: 48px;
+                        height: 48px;
+                        position: relative;
+                        flex-shrink: 0;
+
+                        &:before {
+                            position: absolute;
+                            bottom: 0;
+                            right: 0;
+                            height: 17px;
+                            aspect-ratio: 1;
+                            padding: 4px;
+                            border-radius: 50%;
+                        }
+
+                        &.navbar-user-notification-advice:before {
+                            background-color: blue;
+                            content: url($assetUrl + 'bell.svg');
+                        }
+
+
+                        &.navbar-user-notification-expiration:before {
+                            background-color: red;
+                            content: url($assetUrl + 'clock.svg');
+                        }
+
+
+                        &.navbar-user-notification-order:before {
+                            background-color: $mainColor;
+                            content: url($assetUrl + 'kart.svg');
+                        }
+
+
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            border-radius: 50%;
+                        }
+                    }
+
+                    span {
+                        font-size: 14px;
+                        line-height: 20px;
+                        font-weight: 300;
+                        padding-right: 27px;
                     }
                 }
             }
         }
 
-        .game-info {
-            padding: 13px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        @media screen and (max-width: map.get($breakpoints, "sm")) {
+            flex: unset;
+            margin-left: 10px;
+        }
+    }
+}
 
-            .load-bar {
-                height: 8px;
-                background-color: whitesmoke;
-                border-radius: 4px;
+.images-slider-container {
+    position: relative;
 
-                div {
-                    background-color: green;
-                    height: 100%;
-                    width: 50%;
-                    border-radius: 4px;
+    .images-slider {
+        aspect-ratio: 38/13;
+        display: flex;
+        margin-bottom: 20px;
+        overflow-x: hidden;
+        scroll-snap-type: x mandatory;
+
+        @media screen and (max-width: map.get($breakpoints, "md")) {
+            aspect-ratio: 38/25;
+        }
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        figure {
+            flex-shrink: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            scroll-snap-align: start;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+
+                &.desktop-image {
+                    display: block;
+                }
+
+                &.mobile-image {
+                    display: none;
+                }
+
+                @media screen and (max-width: map.get($breakpoints, "md")) {
+                    &.desktop-image {
+                        display: none;
+                    }
+
+                    &.mobile-image {
+                        display: block;
+                    }
                 }
             }
+        }
+    }
+
+    .image-selectors {
+        height: 10px;
+        display: flex;
+        position: absolute;
+        bottom: 20px;
+        gap: 5px;
+        left: 0;
+        right: 0;
+        justify-content: center;
+
+        .image-selector {
+            background-color: grey;
+            height: 100%;
+            border-radius: 50%;
+            aspect-ratio: 1;
+
+            &.active {
+                border: 1px solid grey;
+                background-color: white;
+            }
+        }
+    }
+
+    .image-loading-bar {
+        height: 5px;
+        background-color: $mainColor;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0%;
+        transition: width 0.1s linear;
+    }
+
+    .chevron {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 0;
+        bottom: 0;
+        width: 100px;
+
+        svg {
+            stroke: white !important;
+
+            path {
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        &.right-chevron {
+            right: 0;
+        }
+
+        &.left-chevron {
+            left: 0;
+        }
+    }
+}
+
+.container {
+    width: calc(100% - 100px);
+    max-width: 1125px;
+    margin: 0 auto;
+    padding: 0 50px;
+
+    @media screen and (max-width: map.get($breakpoints, "md")) {
+        max-width: 100%;
+        padding: 0 20px;
+    }
+
+    .games-container-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .games-section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
 
             h2 {
-                font-size: 16px;
-                text-wrap: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                margin: 10px 0 2px;
+                font-size: 30px;
+            }
+        }
+
+        .show-all {
+            background-color: white;
+            border: none;
+            border-radius: 15px;
+            display: block;
+            height: 36px;
+            font-size: 14px;
+            padding: 0 20px;
+            line-height: 36px;
+            box-shadow: $boxShadow;
+            color: #0090ff;
+            font-weight: 550;
+            text-decoration: none;
+
+            &:active {
+                background-color: #0090ff;
+                color: white;
+            }
+        }
+    }
+
+    .games-section {
+        position: relative;
+        margin-bottom: 100px;
+
+        .games-section-chevron {
+            display: none;
+            position: absolute;
+            z-index: 1;
+            background-color: white;
+            padding: 20px 10px;
+            border-radius: 8px;
+            box-shadow: $boxShadow;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            height: 29.5px;
+
+            @media screen and (min-width: map.get($breakpoints, "md") + 0.1px) {
+                display: block;
             }
 
-            p {
-                font-size: 14px;
-                color: grey;
-                margin: 0;
+            &:hover {
+                cursor: pointer;
             }
 
-            .details {
-                display: flex;
-                margin-bottom: 10px;
-                position: relative;
+            &:active {
+                cursor: pointer;
+                background-color: #0090ff;
+                color: white;
 
-                div {
-                    flex: 1;
-                }
-
-                .discount {
+                svg {
                     color: white;
-                    background-color: red;
-                    border-radius: 3px;
-                    padding: 2px 5px;
-                    margin-right: 3px;
+                }
+            }
+
+            svg {
+                height: 22.5px;
+            }
+
+            &.games-section-chevron-hidden {
+                display: none;
+            }
+
+            &.games-section-chevron-left {
+                left: -45px;
+            }
+
+            &.games-section-chevron-right {
+                right: -45px
+            }
+        }
+
+        .games-container {
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            overflow-x: scroll;
+            padding: 20px 0;
+            scroll-snap-type: x mandatory;
+            position: relative;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+
+            .game-article {
+                width: 258px;
+                background-color: white;
+                border-radius: 10px;
+                overflow: hidden;
+                flex-shrink: 0;
+                scroll-snap-align: start;
+
+                figure {
+                    margin: 0;
+                    position: relative;
+
+                    img {
+                        max-width: 100%;
+                    }
+
+                    .expiration-time-container {
+                        position: absolute;
+                        height: 24px;
+                        background-color: rgba(0, 144, 255, 0.6);
+                        top: 10px;
+                        left: 10px;
+                        color: white;
+                        display: flex;
+                        align-items: center;
+                        padding: 2px 10px;
+                        border-radius: $chipBorderRadius;
+
+
+                        svg {
+                            margin-right: 5px;
+                        }
+
+                        span {
+                            font-size: 14px;
+                        }
+                    }
+
+                    .bookmark-container {
+                        position: absolute;
+                        height: 36px;
+                        top: 10px;
+                        right: 10px;
+                        background-color: white;
+                        aspect-ratio: 1;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: all 0.2s ease-in-out;
+
+                        svg {
+                            transition: all 0.2s ease-in-out;
+                        }
+
+                        &:hover {
+                            cursor: pointer;
+                            background-color: #0090ff;
+
+                            svg {
+                                color: white;
+                            }
+                        }
+                    }
                 }
 
-                .old-price {
-                    text-decoration: line-through;
-                    color: dimgrey;
-                }
+                .game-info {
+                    padding: 13px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
 
-                .price {
-                    margin-top: 3px;
-                    font-size: 17px;
-                    font-weight: bold;
-                    color: black;
-                }
+                    .load-bar {
+                        height: 8px;
+                        background-color: whitesmoke;
+                        border-radius: 4px;
 
-                .stock {
-                    color: red;
-                    font-weight: 550;
-                    position: absolute;
-                    bottom: 2px;
-                    right: 5px;
+                        div {
+                            background-color: green;
+                            height: 100%;
+                            width: 50%;
+                            border-radius: 4px;
+                        }
+                    }
+
+                    h2 {
+                        font-size: 16px;
+                        text-wrap: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        margin: 10px 0 2px;
+                    }
+
+                    p {
+                        font-size: 14px;
+                        color: grey;
+                        margin: 0;
+                    }
+
+                    .details {
+                        display: flex;
+                        margin-bottom: 10px;
+                        position: relative;
+
+                        div {
+                            flex: 1;
+                        }
+
+                        .discount {
+                            color: white;
+                            background-color: red;
+                            border-radius: 3px;
+                            padding: 2px 5px;
+                            margin-right: 3px;
+                        }
+
+                        .old-price {
+                            text-decoration: line-through;
+                            color: dimgrey;
+                        }
+
+                        .price {
+                            margin-top: 3px;
+                            font-size: 17px;
+                            font-weight: bold;
+                            color: black;
+                        }
+
+                        .stock {
+                            color: red;
+                            font-size: 12px;
+                            font-weight: 550;
+                            position: absolute;
+                            bottom: 2px;
+                            right: 5px;
+                        }
+                    }
                 }
             }
         }
     }
 }
-
-

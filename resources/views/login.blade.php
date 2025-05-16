@@ -27,31 +27,5 @@
             <x-login-form/>
         </div>
     </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const loginForm = document.getElementById('login-form');
-            const emailField = document.querySelector('input[name="email"]');
-            const passwordField = document.querySelector('input[name="password"]');
-
-            loginForm.addEventListener('submit', function (event) {
-                try {
-                    event.preventDefault();
-
-                    const email = emailField.value;
-                    const password = passwordField.value;
-
-                    if (!email || !password) {
-                        alert('Please fill in all fields.');
-                        return;
-                    }
-
-                    loginForm.submit();
-                } catch (e) {
-                    console.log(e);
-                }
-            });
-        });
-    </script>
 </body>
 </html>

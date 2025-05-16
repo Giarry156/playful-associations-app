@@ -59,22 +59,15 @@ class UserController extends Controller
 
         $user = User::where('email', $validated['email'])->first();
 
-        Auth::login($user);
-
         if (!Hash::check($validated['password'], $user->password)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
+            return back()->withErrors([
+                'email' => 'The provided credentials do not match our records.',
+            ]);
         }
 
-        $presidencyAssociations = Association::where('president_id', $user->id)->get();
-        $bindAssociations = $user->associations()->get();
-        $games = $user->games()->get();
+        Auth::login($user);
 
-        return view('welcome', [
-            'user' => $user,
-            'presidencyAssociations' => $presidencyAssociations,
-            'bindAssociations' => $bindAssociations,
-            'games' => $games,
-        ]);
+        return redirect()->route('welcome');
     }
 
     public function updateUser(UpdateUserRequest $request)
@@ -97,9 +90,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return view('user_settings', [
-            'user' => $user,
-        ]);
+        return redirect()->route('welcome');
     }
 
     public function changePassword(ChangePasswordRequest $request)

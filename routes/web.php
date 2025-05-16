@@ -23,7 +23,7 @@ Route::get('/login', function () {
     return view('login');
 })->name('login');
 
-Route::get('/login_form', [\App\Http\Controllers\UserController::class, 'loginForm'])->name('login_form');
+Route::post('/login_form', [\App\Http\Controllers\UserController::class, 'loginForm'])->name('login_form');
 
 Route::get('/user_settings', function () {
     if (\Illuminate\Support\Facades\Auth::check()) {
@@ -49,10 +49,6 @@ Route::post('/logout', function () {
 })->name('logout');
 
 Route::get('/', function () {
-    if (!auth()->check()) {
-        return redirect()->route('login');
-    }
-
     $user = auth()->user();
 
     $presidencyAssociations = Association::where('president_id', $user->id)->get();
@@ -65,4 +61,6 @@ Route::get('/', function () {
         'games' => $games,
         'user' => $user,
     ]);
-});
+})->middleware("auth")->name('welcome');
+
+Route::post('/unbind/{association}', [\App\Http\Controllers\AssociationController::class, 'unbind'])->name('unbind')->middleware('auth');
